@@ -61,4 +61,15 @@ class LiquidTagTest < Minitest::Test
 
     assert_offenses("", offenses)
   end
+
+  def test_allows_sections_tag_with_template_keyword_in_layout
+    offenses = analyze_theme(
+      ThemeCheck::SyntaxError.new,
+      "sections/theme.liquid" => <<~END,
+        {% sections template %}
+      END
+    )
+
+    assert_offenses("Error in tag 'sections' - Valid syntax: sections '[type]' or template at sections/theme.liquid:1", offenses)
+  end
 end

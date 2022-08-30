@@ -33,8 +33,9 @@ module ThemeCheck
         match = markup.match(SYNTAX)
         raise(
           Liquid::SyntaxError,
-          "Error in tag 'sections' - Valid syntax: sections '[type]'",
+          "Error in tag 'sections' - Valid syntax: sections '[type]' or template",
         ) unless match
+
         @sections_name = match[:sections_name].tr(%('"), '')
         @sections_name.chomp!(".liquid") if @sections_name.end_with?(".liquid")
       end
