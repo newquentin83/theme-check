@@ -28,23 +28,28 @@ module ThemeCheck
         assert_can_complete_with(@provider, "{{ 'foo.js' | asset_url | image", "image_url")
       end
 
-      def test_suggest_filters_compatible_with_the_array_type
+      def test_all_filters_when_no_assignment
+        assert_can_complete_with(@provider, "{{ 'test%40test.com' | ", @filter_compatible_with_the_array_type)
+        assert_can_complete_with(@provider, "{{ current_tags | ", @filter_compatible_with_the_string_type)
+      end
+
+      def test_filters_compatible_with_the_array_type_for_object
         token = "{% assign ct = current_tags | "
         assert_can_complete_with(@provider, token, @filter_compatible_with_the_array_type)
         refute_can_complete_with(@provider, token, @filter_compatible_with_the_string_type)
       end
 
-      def test_suggest_filters_compatible_with_the_string_type
+      def test_filters_compatible_with_the_array_type_for_attribute
+        token = "{% assign c = product.collections | "
+        assert_can_complete_with(@provider, token, @filter_compatible_with_the_array_type)
+        refute_can_complete_with(@provider, token, @filter_compatible_with_the_string_type)
+      end
+
+      def test_filters_compatible_with_the_string_type
         token = "{% assign t = product.title | "
         assert_can_complete_with(@provider, token, @filter_compatible_with_the_string_type)
         refute_can_complete_with(@provider, token, @filter_compatible_with_the_array_type)
-        # TODO: refute_can_complete_with(@provider, "{{ image_url | ", "url_decode")
-        # TODO: assert_can_complete_with(@provider, "{{ 'test%40test.com' | ", "url_decode")
       end
-
-      # TODO: Add test for "assign c = product.collections | "
-
-      # TODO: In order to keep this implementation backward compatible, when we can't guess the current context type, the default behavior is keeping suggesting all filters.
 
       def test_does_not_complete_deprecated_filters
         refute_can_complete_with(@provider, "{{ 'foo.js' | hex_to", "hex_to_rgba")
