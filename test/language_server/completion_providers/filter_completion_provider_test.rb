@@ -8,6 +8,8 @@ module ThemeCheck
 
       def setup
         @provider = FilterCompletionProvider.new
+        @filter_compatible_with_the_array_type = "compact"
+        @filter_compatible_with_the_string_type = "url_decode"
       end
 
       def test_can_complete?
@@ -28,13 +30,14 @@ module ThemeCheck
 
       def test_suggest_filters_compatible_with_the_array_type
         token = "{% assign ct = current_tags | "
-        assert_can_complete_with(@provider, token, "compact")
-        refute_can_complete_with(@provider, token, "url_decode")
+        assert_can_complete_with(@provider, token, @filter_compatible_with_the_array_type)
+        refute_can_complete_with(@provider, token, @filter_compatible_with_the_string_type)
       end
 
       def test_suggest_filters_compatible_with_the_string_type
-        assert_can_complete_with(@provider, "{% assign t = product.title | ", "url_decode")
-        refute_can_complete_with(@provider, "{% assign t = product.title | ", "compact")
+        token = "{% assign t = product.title | "
+        assert_can_complete_with(@provider, token, @filter_compatible_with_the_string_type)
+        refute_can_complete_with(@provider, token, @filter_compatible_with_the_array_type)
         # TODO: refute_can_complete_with(@provider, "{{ image_url | ", "url_decode")
         # TODO: assert_can_complete_with(@provider, "{{ 'test%40test.com' | ", "url_decode")
       end

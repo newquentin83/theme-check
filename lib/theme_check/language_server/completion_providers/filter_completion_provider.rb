@@ -11,19 +11,8 @@ module ThemeCheck
 
         return [] if content.nil?
         return [] unless can_complete?(content, cursor)
-        finder = VariableLookupFinder::AssignmentsFinder.new(content)
-        finder.find!
 
-        (_, assignment), *other_assignments = finder.assignments.to_a
-        if !assignment.nil? && other_assignments.empty?
-          object, property = VariableLookupTraverser.lookup_object_and_property(assignment)
-          input_type = property ? property.return_type : object.name
-          return ShopifyLiquid::SourceIndex.filters
-              .select { |filter| filter.input_type == input_type }
-              .map { |filter| filter_to_completion(filter.name) }
-        end
-
-        available_labels
+        available_labels(content)
           .select { |w| w.start_with?(partial(content, cursor)) }
           .map { |filter| filter_to_completion(filter) }
       end
@@ -37,8 +26,18 @@ module ThemeCheck
 
       private
 
-      def available_labels
-        @labels ||= ShopifyLiquid::Filter.labels - ShopifyLiquid::DeprecatedFilter.labels
+      def available_labels(content)
+        finder = VariableLookupFinder::AssignmentsFinder.new(content).tap(&:find!)
+        (_, assignment), other_assignment = finder.assignments.to_a
+        if assignment.nil? || !other_assignment.nil?
+          return @labels ||= ShopifyLiquid::Filter.labels - ShopifyLiquid::DeprecatedFilter.labels
+        end
+
+        object, property = VariableLookupTraverser.lookup_object_and_property(assignment)
+        input_type = property ? property.return_type : object.name
+        ShopifyLiquid::SourceIndex.filters
+          .select { |filter| filter.input_type == input_type }
+          .map(&:name)
       end
 
       def cursor_on_filter?(content, cursor)
