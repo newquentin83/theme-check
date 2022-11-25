@@ -37,11 +37,7 @@ module ThemeCheck
         object, property = VariableLookupTraverser.lookup_object_and_property(assignment)
         input_type = property ? property.return_type : object.name
         ShopifyLiquid::SourceIndex.filters
-          .filter_map do |filter|
-            next nil if filter.deprecated? || filter.input_type != input_type
-
-            filter.name
-          end
+          .filter_map { |filter| filter.name if !filter.deprecated? && filter.input_type == input_type }
       end
 
       def cursor_on_filter?(content, cursor)
