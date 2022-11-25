@@ -52,7 +52,9 @@ module ThemeCheck
       end
 
       def test_does_not_complete_deprecated_filters
-        refute_can_complete_with(@provider, "{{ 'foo.js' | hex_to", "hex_to_rgba")
+        deprecated_filter = "hex_to_rgba"
+        refute_can_complete_with(@provider, "{{ 'foo.js' | hex_to", deprecated_filter)
+        refute_can_complete_with(@provider, "{% assign t = product.title | ", deprecated_filter)
       end
     end
   end

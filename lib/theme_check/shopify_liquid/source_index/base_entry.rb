@@ -28,6 +28,10 @@ module ThemeCheck
           hash['description'] || ''
         end
 
+        def deprecated?
+          hash['deprecated']
+        end
+
         attr_writer :return_type
 
         def return_type

@@ -36,7 +36,7 @@ module ThemeCheck
         object, property = VariableLookupTraverser.lookup_object_and_property(assignment)
         input_type = property ? property.return_type : object.name
         ShopifyLiquid::SourceIndex.filters
-          .select { |filter| filter.input_type == input_type }
+          .select { |filter| !filter.deprecated? && filter.input_type == input_type }
           .map(&:name)
       end
 
