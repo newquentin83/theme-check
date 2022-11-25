@@ -34,6 +34,7 @@ module ThemeCheck
 
       def test_suggest_filters_compatible_with_the_string_type
         assert_can_complete_with(@provider, "{% assign t = product.title | ", "url_decode")
+        refute_can_complete_with(@provider, "{% assign t = product.title | ", "compact")
         # TODO: refute_can_complete_with(@provider, "{{ image_url | ", "url_decode")
         # TODO: assert_can_complete_with(@provider, "{{ 'test%40test.com' | ", "url_decode")
       end

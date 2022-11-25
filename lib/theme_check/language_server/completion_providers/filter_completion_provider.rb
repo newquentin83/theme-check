@@ -16,7 +16,8 @@ module ThemeCheck
 
         (_, assignment), *other_assignments = finder.assignments.to_a
         if !assignment.nil? && other_assignments.empty?
-          input_type = VariableLookupTraverser.find_object(assignment.name).return_type
+          object, property = VariableLookupTraverser.lookup_object_and_property(assignment)
+          input_type = property ? property.return_type : object.name
           return ShopifyLiquid::SourceIndex.filters
               .select { |filter| filter.input_type == input_type }
               .map { |filter| filter_to_completion(filter.name) }
