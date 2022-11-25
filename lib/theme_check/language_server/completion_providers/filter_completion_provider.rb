@@ -11,6 +11,16 @@ module ThemeCheck
 
         return [] if content.nil?
         return [] unless can_complete?(content, cursor)
+        finder = VariableLookupFinder::AssignmentsFinder.new(content)
+        finder.find!
+
+        (_, assignment), *other_assignments = finder.assignments.to_a
+        if !assignment.nil? && other_assignments.empty?
+          input_type = VariableLookupTraverser.find_object(assignment.name).return_type
+          return ShopifyLiquid::SourceIndex.filters
+              .select { |filter| filter.input_type == input_type }
+              .map { |filter| filter_to_completion(filter.name) }
+        end
 
         available_labels
           .select { |w| w.start_with?(partial(content, cursor)) }

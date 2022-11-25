@@ -27,17 +27,20 @@ module ThemeCheck
       end
 
       def test_suggest_filters_compatible_with_the_array_type
-        assert_can_complete_with(@provider, "{{ current_tags | ", "compact")
-        refute_can_complete_with(@provider, "{{ current_tags | ", "url_decode")
+        token = "{% assign ct = current_tags | "
+        assert_can_complete_with(@provider, token, "compact")
+        refute_can_complete_with(@provider, token, "url_decode")
       end
 
       def test_suggest_filters_compatible_with_the_string_type
-        assert_can_complete_with(@provider, "{{ image_url | ", "url_decode")
-        refute_can_complete_with(@provider, "{{ image_url | ", "compact")
+        assert_can_complete_with(@provider, "{% assign t = product.title | ", "url_decode")
+        # TODO: refute_can_complete_with(@provider, "{{ image_url | ", "url_decode")
         # TODO: assert_can_complete_with(@provider, "{{ 'test%40test.com' | ", "url_decode")
       end
 
       # TODO: Add test for "assign c = product.collections | "
+
+      # TODO: In order to keep this implementation backward compatible, when we can't guess the current context type, the default behavior is keeping suggesting all filters.
 
       def test_does_not_complete_deprecated_filters
         refute_can_complete_with(@provider, "{{ 'foo.js' | hex_to", "hex_to_rgba")
